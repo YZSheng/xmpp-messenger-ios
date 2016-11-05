@@ -57,7 +57,7 @@ public class OneMessage: NSObject {
 		
 		let completeMessage = DDXMLElement.elementWithName("message") as! DDXMLElement
 		
-		completeMessage.addAttributeWithName("id", stringValue: messageID)
+		completeMessage.addAttributeWithName("id", stringValue: messageID!)
 		completeMessage.addAttributeWithName("type", stringValue: "chat")
 		completeMessage.addAttributeWithName("to", stringValue: receiver)
 		completeMessage.addChild(body)

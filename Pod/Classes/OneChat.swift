@@ -131,8 +131,8 @@ public class OneChat: NSObject {
 		// The XMPPRoster will automatically integrate with XMPPvCardAvatarModule to cache roster photos in the roster.
 		
 		xmppvCardStorage = XMPPvCardCoreDataStorage.sharedInstance()
-		xmppvCardTempModule = XMPPvCardTempModule(withvCardStorage: xmppvCardStorage)
-		xmppvCardAvatarModule = XMPPvCardAvatarModule(withvCardTempModule: xmppvCardTempModule)
+		xmppvCardTempModule = XMPPvCardTempModule(vCardStorage: xmppvCardStorage)
+		xmppvCardAvatarModule = XMPPvCardAvatarModule(vCardTempModule: xmppvCardTempModule)
 		
 		// Setup capabilities
 		//
@@ -372,7 +372,7 @@ extension OneChat: XMPPStreamDelegate {
 			let bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
 			
 			dispatch_async(bgQueue, { () -> Void in
-				var result: SecTrustResultType =  kSecTrustResultDeny as! SecTrustResultType
+				var result: SecTrustResultType =  SecTrustResultType.Deny 
 				let status = SecTrustEvaluate(trust, &result)
 				
 				if status == noErr {

@@ -131,9 +131,9 @@ public class OneChat: NSObject {
 		// The XMPPRoster will automatically integrate with XMPPvCardAvatarModule to cache roster photos in the roster.
 		
 		xmppvCardStorage = XMPPvCardCoreDataStorage.sharedInstance()
-    xmppvCardTempModule = XMPPvCardTempModule(vCardStorage: xmppvCardStorage)
-    xmppvCardAvatarModule = XMPPvCardAvatarModule(vCardTempModule: xmppvCardTempModule)
-    
+		xmppvCardTempModule = XMPPvCardTempModule(withvCardStorage: xmppvCardStorage)
+		xmppvCardAvatarModule = XMPPvCardAvatarModule(withvCardTempModule: xmppvCardTempModule)
+		
 		// Setup capabilities
 		//
 		// The XMPPCapabilities module handles all the complex hashing of the caps protocol (XEP-0115).

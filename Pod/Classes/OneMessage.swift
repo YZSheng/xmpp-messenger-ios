@@ -53,7 +53,7 @@ public class OneMessage: NSObject {
 		let body = DDXMLElement.elementWithName("body") as! DDXMLElement
 		let messageID = OneChat.sharedInstance.xmppStream?.generateUUID()
 		
-		body.setStringValue(message)
+		body.stringValue = message
 		
 		let completeMessage = DDXMLElement.elementWithName("message") as! DDXMLElement
 		

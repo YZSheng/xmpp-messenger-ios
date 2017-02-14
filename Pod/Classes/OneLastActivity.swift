@@ -10,15 +10,15 @@
 import Foundation
 import XMPPFramework
 
-public typealias OneMakeLastCallCompletionHandler = (response: XMPPIQ?, forJID:XMPPJID?, error: DDXMLElement?) -> Void
+public typealias OneMakeLastCallCompletionHandler = (_ response: XMPPIQ?, _ forJID:XMPPJID?, _ error: DDXMLElement?) -> Void
 
-public class OneLastActivity: NSObject {
+open class OneLastActivity: NSObject {
 	
 	var didMakeLastCallCompletionBlock: OneMakeLastCallCompletionHandler?
 	
 	// MARK: Singleton
 	
-	public class var sharedInstance : OneLastActivity {
+	open class var sharedInstance : OneLastActivity {
 		struct OneLastActivitySingleton {
 			static let instance = OneLastActivity()
 		}
@@ -27,57 +27,57 @@ public class OneLastActivity: NSObject {
 	
 	// MARK: Public Functions
 	
-	public func getStringFormattedDateFrom(second: UInt) -> NSString {
+	open func getStringFormattedDateFrom(_ second: UInt) -> NSString {
 		if second > 0 {
-			let time = NSNumber(unsignedLong: second)
+			let time = NSNumber(value: second as UInt)
 			let interval = time.doubleValue
-			let elapsedTime = NSDate(timeIntervalSince1970: interval)
-			let dateFormatter = NSDateFormatter()
+			let elapsedTime = Date(timeIntervalSince1970: interval)
+			let dateFormatter = DateFormatter()
 			dateFormatter.dateFormat = "HH:mm:ss"
 			
-			return dateFormatter.stringFromDate(elapsedTime)
+			return dateFormatter.string(from: elapsedTime) as NSString
 		} else {
 			return ""
 		}
 	}
 	
-	public func getStringFormattedElapsedTimeFrom(date: NSDate!) -> String {
+	open func getStringFormattedElapsedTimeFrom(_ date: Date!) -> String {
 		var elapsedTime = "nc"
-		let startDate = NSDate()
-		let components = NSCalendar.currentCalendar().components(NSCalendarUnit.Day, fromDate: date, toDate: startDate, options: NSCalendarOptions.MatchStrictly)
+		let startDate = Date()
+		let components = (Calendar.current as NSCalendar).components(NSCalendar.Unit.day, from: date, to: startDate, options: NSCalendar.Options.matchStrictly)
 		
 		if nil == date {
 			return elapsedTime
 		}
 		
-		if 52 < components.weekOfYear {
+		if 52 < components.weekOfYear! {
 			elapsedTime = "more than a year"
-		} else if 1 <= components.weekOfYear {
-			if 1 < components.weekOfYear {
+		} else if 1 <= components.weekOfYear! {
+			if 1 < components.weekOfYear! {
 				elapsedTime = "\(components.weekOfYear) weeks"
 			} else {
 				elapsedTime = "\(components.weekOfYear) week"
 			}
-		} else if 1 <= components.day {
-			if 1 < components.day {
+		} else if 1 <= components.day! {
+			if 1 < components.day! {
 				elapsedTime = "\(components.day) days"
 			} else {
 				elapsedTime = "\(components.day) day"
 			}
-		} else if 1 <= components.hour {
-			if 1 < components.hour {
+		} else if 1 <= components.hour! {
+			if 1 < components.hour! {
 				elapsedTime = "\(components.hour) hours"
 			} else {
 				elapsedTime = "\(components.hour) hour"
 			}
-		} else if 1 <= components.minute {
-			if 1 < components.minute {
+		} else if 1 <= components.minute! {
+			if 1 < components.minute! {
 				elapsedTime = "\(components.minute) minutes"
 			} else {
 				elapsedTime = "\(components.minute) minute"
 			}
-		} else if 1 <= components.second {
-			if 1 < components.second {
+		} else if 1 <= components.second! {
+			if 1 < components.second! {
 				elapsedTime = "\(components.second) seconds"
 			} else {
 				elapsedTime = "\(components.second) second"
@@ -89,43 +89,43 @@ public class OneLastActivity: NSObject {
 		return elapsedTime
 	}
 	
-	public class func sendLastActivityQueryToJID(userName: String, sender: XMPPLastActivity? = nil, completionHandler completion:OneMakeLastCallCompletionHandler) {
+	open class func sendLastActivityQueryToJID(_ userName: String, sender: XMPPLastActivity? = nil, completionHandler completion:@escaping OneMakeLastCallCompletionHandler) {
 		sharedInstance.didMakeLastCallCompletionBlock = completion
-		let userJID = XMPPJID.jidWithString(userName)
+        let userJID = XMPPJID(string: userName)
 		
-		sender?.sendLastActivityQueryToJID(userJID)
+		sender?.sendQuery(to: userJID)
 	}
 }
 
 extension OneLastActivity: XMPPLastActivityDelegate {
 	
-	public func xmppLastActivity(sender: XMPPLastActivity!, didNotReceiveResponse queryID: String!, dueToTimeout timeout: NSTimeInterval) {
+	public func xmppLastActivity(_ sender: XMPPLastActivity!, didNotReceiveResponse queryID: String!, dueToTimeout timeout: TimeInterval) {
 		if let callback = OneLastActivity.sharedInstance.didMakeLastCallCompletionBlock {
-			callback(response: nil, forJID:nil ,error: DDXMLElement(name: "TimeOut"))
+			callback(nil, nil ,DDXMLElement(name: "TimeOut"))
 		}
 	}
 	
-	public func xmppLastActivity(sender: XMPPLastActivity!, didReceiveResponse response: XMPPIQ!) {
+	public func xmppLastActivity(_ sender: XMPPLastActivity!, didReceiveResponse response: XMPPIQ!) {
 		if let callback = OneLastActivity.sharedInstance.didMakeLastCallCompletionBlock {
 			if let resp = response {
-				if resp.elementForName("error") != nil {
-					if let from = resp.valueForKey("from") {
-						callback(response: resp, forJID: XMPPJID.jidWithString("\(from)"), error: resp.elementForName("error"))
+				if resp.forName("error") != nil {
+					if let from = resp.value(forKey: "from") {
+                        callback(resp, XMPPJID(string: "\(from)"), resp.forName("error"))
 					} else {
-						callback(response: resp, forJID: nil, error: resp.elementForName("error"))
+						callback(resp, nil, resp.forName("error"))
 					}
 				} else {
-					if let from = resp.attributeForName("from") {
-						callback(response: resp, forJID: XMPPJID.jidWithString("\(from)"), error: nil)
+					if let from = resp.attribute(forName: "from") {
+                        callback(resp, XMPPJID(string: "\(from)"), nil)
 					} else {
-						callback(response: resp, forJID: nil, error: nil)
+						callback(resp, nil, nil)
 					}
 				}
 			}
 		}
 	}
 	
-	public func numberOfIdleTimeSecondsForXMPPLastActivity(sender: XMPPLastActivity!, queryIQ iq: XMPPIQ!, currentIdleTimeSeconds idleSeconds: UInt) -> UInt {
+	public func numberOfIdleTimeSeconds(for sender: XMPPLastActivity!, queryIQ iq: XMPPIQ!, currentIdleTimeSeconds idleSeconds: UInt) -> UInt {
 		return 30
 	}
 }

@@ -134,6 +134,10 @@ open class OneChats: NSObject, NSFetchedResultsControllerDelegate {
 						element = nil
 					}
 					let sender: String
+
+					if element == nil {
+						continue
+					}
 					
                     if element.attributeStringValue(forName: "to") == UserDefaults.standard.string(forKey: "kXMPPmyJID")! || (element.attributeStringValue(forName: "to") as NSString).contains(UserDefaults.standard.string(forKey: "kXMPPmyJID")!) {
                         sender = (message as AnyObject).bareJidStr;

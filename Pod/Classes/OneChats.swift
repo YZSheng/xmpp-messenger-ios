@@ -138,15 +138,10 @@ open class OneChats: NSObject, NSFetchedResultsControllerDelegate {
 					if element == nil {
 						continue
 					}
-					
-                    if element.attributeStringValue(forName: "to") == UserDefaults.standard.string(forKey: "kXMPPmyJID")! || (element.attributeStringValue(forName: "to") as NSString).contains(UserDefaults.standard.string(forKey: "kXMPPmyJID")!) {
-                        sender = (message as AnyObject).bareJidStr;
-                        
-                        
-                        if !archivedMessage.contains(sender) {
-                            archivedMessage.add(sender)
-                        }
-					}
+					sender = (message as AnyObject).bareJidStr;
+                    if !archivedMessage.contains(sender) {
+                        archivedMessage.add(sender)
+                    }
 				}
 				return archivedMessage
 			} catch _ {
@@ -172,28 +167,6 @@ open class OneChats: NSObject, NSFetchedResultsControllerDelegate {
 		
 		fetchRequest.predicate = predicate
 		fetchRequest.fetchLimit = 1
-		
-//				if let results = moc?.executeFetchRequest(fetchRequest, error: nil) {
-//					println("get user from xmpp - results")
-//					var user: XMPPUserCoreDataStorageObject
-//					var archivedUser = NSMutableArray()
-//		
-//					for user in results {
-//						println(user)
-//						// var element = DDXMLElement(XMLString: user.messageStr, error: nil)
-//						//        let sender: String
-//						//
-//						//        if element.attributeStringValueForName("to") != NSUserDefaults.standardUserDefaults().stringForKey("kXMPPmyJID")! && !(element.attributeStringValueForName("to") as NSString).containsString(NSUserDefaults.standardUserDefaults().stringForKey("kXMPPmyJID")!) {
-//						//          sender = element.attributeStringValueForName("to")
-//						//          if !archivedMessage.containsObject(sender) {
-//						//            archivedMessage.addObject(sender)
-//						//          }
-//						//        }
-//					}
-//					//println("so response \(archivedMessage.count) from \(archivedMessage)")
-//					//return archivedMessage
-//				}
-//		return nil
 	}
 	
 	
@@ -270,6 +243,10 @@ open class OneChats: NSObject, NSFetchedResultsControllerDelegate {
 						element = try DDXMLElement(xmlString: (message as AnyObject).messageStr)
 					} catch _ {
 						element = nil
+					}
+
+					if element == nil {
+						continue
 					}
 					
 					if element.attributeStringValue(forName: "to") != UserDefaults.standard.string(forKey: "kXMPPmyJID")! && !(element.attributeStringValue(forName: "to") as NSString).contains(UserDefaults.standard.string(forKey: "kXMPPmyJID")!) {

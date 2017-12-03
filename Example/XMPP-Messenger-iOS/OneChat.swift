@@ -203,7 +203,12 @@ open class OneChat: NSObject {
 		//	[xmppStream setHostName:@"talk.google.com"];
 		//	[xmppStream setHostPort:5222];
 		
-		
+		if let path = Bundle.main.path(forResource: "Info", ofType: "plist") {
+            let dictRoot = NSDictionary(contentsOfFile: path)
+            if let dict = dictRoot, let hostName = dict["ejabberedHost"] as? String {
+                xmppStream!.hostName = hostName
+            }
+        }
 		// You may need to alter these settings depending on the server you're connecting to
 		customCertEvaluation = true;
 	}

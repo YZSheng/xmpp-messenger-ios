@@ -280,7 +280,8 @@ open class OneChat: NSObject {
 	}
 	
 	open func isConnected() -> Bool {
-		return xmppStream!.isConnected()
+        guard let stream = xmppStream else { return false }
+		return stream.isConnected()
 	}
 	
 	open func disconnect() {

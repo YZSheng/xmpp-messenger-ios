@@ -415,8 +415,10 @@ extension OneChat: XMPPStreamDelegate {
 		streamDidConnectCompletionBlock!(sender, error)
 	}
     
-    public func xmppStreamDidDisconnect(_ sender: XMPPStream!, withError error: Error!) {
-        delegate?.oneStreamDidDisconnect(sender, withError: error as NSError)
+    public func xmppStreamDidDisconnect(_ sender: XMPPStream!, withError error: Error?) {
+        if let delegate = delegate, let error = error {
+            delegate.oneStreamDidDisconnect(sender, withError: error as NSError)
+        }
     }
 	
 }
